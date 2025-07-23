@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 27deg 15% 97%; /* #FDF5F3 in HSL */
+    --foreground: 29deg 23% 18%; /* #5D2E1A in HSL */
+    --card: 27deg 15% 97%;
+    --card-foreground: 29deg 23% 18%;
+    --popover: 27deg 15% 97%;
+    --popover-foreground: 29deg 23% 18%;
+    --primary: 23deg 58% 70%; /* #E8A87C in HSL */
+    --primary-foreground: 27deg 15% 97%;
+    --secondary: 29deg 23% 18%; /* #5D2E1A in HSL */
+    --secondary-foreground: 27deg 15% 97%;
+    --muted: 25deg 20% 16%;
+    --muted-foreground: 29deg 23% 18%;
+    --accent: 23deg 58% 70%;
+    --accent-foreground: 29deg 23% 18%;
+    --destructive: 0deg 84% 60%;
+    --destructive-foreground: 0deg 0% 98%;
+    --border: 25deg 20% 16%;
+    --input: 25deg 20% 16%;
+    --ring: 23deg 58% 70%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 291deg 23% 18%; /* #2D1B2E in HSL */
+    --foreground: 27deg 15% 97%;
+    --card: 291deg 23% 18%;
+    --card-foreground: 27deg 15% 97%;
+    --popover: 291deg 23% 18%;
+    --popover-foreground: 27deg 15% 97%;
+    --primary: 23deg 58% 70%;
+    --primary-foreground: 291deg 23% 18%;
+    --secondary: 29deg 23% 18%;
+    --secondary-foreground: 27deg 15% 97%;
+    --muted: 295deg 25% 20%;
+    --muted-foreground: 27deg 15% 97%;
+    --accent: 23deg 58% 70%;
+    --accent-foreground: 291deg 23% 18%;
+    --destructive: 0deg 62% 30%;
+    --destructive-foreground: 0deg 0% 98%;
+    --border: 295deg 25% 20%;
+    --input: 295deg 25% 20%;
+    --ring: 23deg 58% 70%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+
+    font-family: Inter, sans-serif;
+  }
+}
+
+/* Kora specific styles */
+.kora-gradient {
+  background: linear-gradient(135deg, hsl(27deg 15% 97%) 0%, hsl(25deg 20% 92%) 100%);
+}
+
+.kora-primary {
+  background-color: hsl(23deg 58% 70%);
+  color: hsl(29deg 23% 18%);
+}
+
+.kora-secondary {
+  background-color: hsl(29deg 23% 18%);
+  color: hsl(27deg 15% 97%);
+}
+
+.kora-card {
+  background: hsl(0deg 0% 100% / 80%);
+  backdrop-filter: blur(10px);
+  border: 1px solid hsl(23deg 58% 70% / 20%);
+}
+
+.kora-shadow {
+  box-shadow: 0 4px 20px hsl(23deg 58% 70% / 15%);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(27deg 15% 97%);
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(23deg 58% 70%);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(23deg 58% 65%);
+}
