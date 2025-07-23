@@ -1,87 +1,124 @@
 import { useEffect, useState } from 'react'
-import { blink } from '../blink/client'
+import { Heart, Users, MessageCircle, Calendar, Shield } from 'lucide-react'
 
 interface SplashScreenProps {
-  onAuthComplete: (user: any) => void
+  onComplete: () => void
 }
 
-export default function SplashScreen({ onAuthComplete }: SplashScreenProps) {
-  const [loading, setLoading] = useState(true)
+export default function SplashScreen({ onComplete }: SplashScreenProps) {
+  const [currentFeature, setCurrentFeature] = useState(0)
+
+  const features = [
+    {
+      icon: <Heart className="w-8 h-8 text-primary" />,
+      title: "Find Your Tribe",
+      description: "Connect with mothers who truly understand your journey"
+    },
+    {
+      icon: <Users className="w-8 h-8 text-primary" />,
+      title: "Meaningful Groups",
+      description: "Join small, compatible groups based on your values and needs"
+    },
+    {
+      icon: <MessageCircle className="w-8 h-8 text-primary" />,
+      title: "Safe Support",
+      description: "Access mental health support and specialized communities"
+    },
+    {
+      icon: <Calendar className="w-8 h-8 text-primary" />,
+      title: "Real Connections",
+      description: "Plan activities and build lasting friendships"
+    },
+    {
+      icon: <Shield className="w-8 h-8 text-primary" />,
+      title: "Your Privacy",
+      description: "Safe, moderated spaces designed for authentic connection"
+    }
+  ]
 
   useEffect(() => {
-    const unsubscribe = blink.auth.onAuthStateChanged((state) => {
-      if (!state.isLoading) {
-        setLoading(false)
-        if (state.user) {
-          onAuthComplete(state.user)
-        }
-      }
-    })
+    const timer = setInterval(() => {
+      setCurrentFeature((prev) => (prev + 1) % features.length)
+    }, 2000)
 
-    return unsubscribe
-  }, [onAuthComplete])
+    const splashTimer = setTimeout(() => {
+      onComplete()
+    }, 8000)
 
-  const handleGetStarted = () => {
-    blink.auth.login()
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-[#FDF5F3] to-[#F5E6E0] flex items-center justify-center">
-        <div className="animate-pulse">
-          <div className="w-16 h-16 bg-[#E8A87C] rounded-full"></div>
-        </div>
-      </div>
-    )
-  }
+    return () => {
+      clearInterval(timer)
+      clearTimeout(splashTimer)
+    }
+  }, [onComplete, features.length])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FDF5F3] to-[#F5E6E0] flex flex-col items-center justify-center px-6">
-      <div className="text-center max-w-md mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-primary/10 flex flex-col items-center justify-center p-4">
+      <div className="text-center max-w-md w-full">
         {/* Logo */}
-        <div className="mb-8">
-          <div className="w-24 h-24 bg-[#E8A87C] rounded-full mx-auto mb-4 flex items-center justify-center">
-            <span className="text-[#5D2E1A] text-3xl font-bold">K</span>
+        <div className="mb-8 fade-in">
+          <div className="w-20 h-20 mx-auto mb-4 kora-gradient rounded-full flex items-center justify-center">
+            <Heart className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-4xl font-bold text-[#5D2E1A] mb-2">Kora</h1>
-          <p className="text-[#5D2E1A]/70 text-lg">Community Connection for Mothers</p>
-        </div>
-
-        {/* Description */}
-        <div className="mb-12">
-          <p className="text-[#5D2E1A]/80 text-base leading-relaxed mb-6">
-            Find your tribe. Connect with mothers who understand your journey. 
-            Build meaningful relationships through AI-powered matching.
+          <h1 className="text-4xl font-bold text-accent mb-2">Kora</h1>
+          <p className="text-lg text-muted-foreground">
+            Community Connection for Mothers
           </p>
+        </div>
+
+        {/* Feature showcase */}
+        <div className="kora-card p-6 mb-8 slide-up">
+          <div className="flex flex-col items-center text-center min-h-[120px] justify-center">
+            <div className="mb-3 transition-all duration-500 ease-in-out">
+              {features[currentFeature].icon}
+            </div>
+            <h3 className="text-lg font-semibold text-accent mb-2 transition-all duration-500 ease-in-out">
+              {features[currentFeature].title}
+            </h3>
+            <p className="text-muted-foreground text-sm transition-all duration-500 ease-in-out">
+              {features[currentFeature].description}
+            </p>
+          </div>
           
-          <div className="space-y-3 text-sm text-[#5D2E1A]/70">
-            <div className="flex items-center justify-center space-x-2">
-              <div className="w-2 h-2 bg-[#E8A87C] rounded-full"></div>
-              <span>Personalized group matching</span>
-            </div>
-            <div className="flex items-center justify-center space-x-2">
-              <div className="w-2 h-2 bg-[#E8A87C] rounded-full"></div>
-              <span>Safe, supportive community</span>
-            </div>
-            <div className="flex items-center justify-center space-x-2">
-              <div className="w-2 h-2 bg-[#E8A87C] rounded-full"></div>
-              <span>Mental health support</span>
-            </div>
+          {/* Progress dots */}
+          <div className="flex justify-center space-x-2 mt-4">
+            {features.map((_, index) => (
+              <div
+                key={index}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  index === currentFeature 
+                    ? 'bg-primary scale-125' 
+                    : 'bg-muted'
+                }`}
+              />
+            ))}
           </div>
         </div>
 
-        {/* CTA Button */}
+        {/* Skip button */}
         <button
-          onClick={handleGetStarted}
-          className="w-full bg-[#5D2E1A] text-[#FDF5F3] py-4 px-6 rounded-2xl font-medium text-lg hover:bg-[#4A2415] transition-colors duration-200 shadow-lg"
+          onClick={onComplete}
+          className="text-muted-foreground hover:text-accent transition-colors duration-200 text-sm"
         >
-          Get Started
+          Skip intro
         </button>
-
-        <p className="text-xs text-[#5D2E1A]/50 mt-6">
-          By continuing, you agree to our Terms of Service and Privacy Policy
-        </p>
       </div>
+
+      {/* Loading indicator */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+        <div className="w-32 h-1 bg-muted rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-primary rounded-full transition-all duration-8000 ease-linear"
+            style={{ width: '100%', animation: 'loadingBar 8s linear forwards' }}
+          />
+        </div>
+      </div>
+
+      <style jsx>{`
+        @keyframes loadingBar {
+          from { width: 0%; }
+          to { width: 100%; }
+        }
+      `}</style>
     </div>
   )
 }

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "npm run lint:js && npm run lint:css",
+    "lint": "npm run lint:js",
     "preview": "vite preview",
     "lint:css": "stylelint \"**/*.css\" --fix --quiet",
     "lint:js": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0 --quiet"

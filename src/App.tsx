@@ -1,41 +1,44 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { blink } from './blink/client'
-import { Toaster } from './components/ui/toaster'
 import SplashScreen from './components/SplashScreen'
 import OnboardingFlow from './components/OnboardingFlow'
 import Dashboard from './components/Dashboard'
 
+type AppState = 'splash' | 'onboarding' | 'dashboard'
+
 function App() {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [currentScreen, setCurrentScreen] = useState<'splash' | 'onboarding' | 'dashboard'>('splash')
+  const [appState, setAppState] = useState<AppState>('splash')
 
-  const checkOnboardingStatus = async (user: any) => {
+  const checkOnboardingStatus = useCallback(async (userId: string) => {
     try {
-      // Check if user profile exists in database
-      const profiles = await blink.db.userProfiles.list({
-        where: { userId: user.id },
+      const profiles = await blink.db.user_profiles.list({
+        where: { user_id: userId },
         limit: 1
       })
       
-      if (profiles.length > 0 && Number(profiles[0].onboardingCompleted) > 0) {
-        setCurrentScreen('dashboard')
+      if (profiles.length > 0 && profiles[0].onboarding_completed) {
+        setAppState('dashboard')
       } else {
-        setCurrentScreen('onboarding')
+        setAppState('onboarding')
       }
     } catch (error) {
       console.error('Error checking onboarding status:', error)
-      setCurrentScreen('onboarding')
+      setAppState('onboarding')
     }
-  }
+  }, [])
 
-  const handleAuthComplete = (user: any) => {
-    setUser(user)
-    checkOnboardingStatus(user)
-  }
+  const handleSplashComplete = useCallback(() => {
+    if (user) {
+      checkOnboardingStatus(user.id)
+    } else {
+      setAppState('onboarding')
+    }
+  }, [user, checkOnboardingStatus])
 
   const handleOnboardingComplete = () => {
-    setCurrentScreen('dashboard')
+    setAppState('dashboard')
   }
 
   useEffect(() => {
@@ -44,35 +47,50 @@ function App() {
       setLoading(state.isLoading)
       
       if (!state.isLoading && state.user) {
-        checkOnboardingStatus(state.user)
-      } else if (!state.isLoading && !state.user) {
-        setCurrentScreen('splash')
+        // Check if user has completed onboarding
+        checkOnboardingStatus(state.user.id)
       }
     })
-
     return unsubscribe
-  }, [])
+  }, [checkOnboardingStatus])
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#FDF5F3] to-[#F5E6E0] flex items-center justify-center">
-        <div className="animate-pulse">
-          <div className="w-16 h-16 bg-[#E8A87C] rounded-full"></div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="kora-card p-8 max-w-md w-full text-center">
+          <h1 className="text-2xl font-bold text-accent mb-4">Welcome to Kora</h1>
+          <p className="text-muted-foreground mb-6">
+            Connect with mothers who understand your journey
+          </p>
+          <button
+            onClick={() => blink.auth.login()}
+            className="kora-button-primary w-full py-3 px-6"
+          >
+            Sign In to Continue
+          </button>
         </div>
       </div>
     )
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FDF5F3] to-[#F5E6E0]">
-      {currentScreen === 'splash' && <SplashScreen onAuthComplete={handleAuthComplete} />}
-      {currentScreen === 'onboarding' && user && (
-        <OnboardingFlow user={user} onComplete={handleOnboardingComplete} />
-      )}
-      {currentScreen === 'dashboard' && user && <Dashboard user={user} />}
-      <Toaster />
-    </div>
-  )
+  switch (appState) {
+    case 'splash':
+      return <SplashScreen onComplete={handleSplashComplete} />
+    case 'onboarding':
+      return <OnboardingFlow onComplete={handleOnboardingComplete} />
+    case 'dashboard':
+      return <Dashboard />
+    default:
+      return <SplashScreen onComplete={handleSplashComplete} />
+  }
 }
 
 export default App

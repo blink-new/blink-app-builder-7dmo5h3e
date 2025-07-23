@@ -4,3 +4,5 @@ export const blink = createClient({
   projectId: 'blink-app-builder-7dmo5h3e',
   authRequired: true
 })
+
+export default blink
