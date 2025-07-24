@@ -1,124 +1,66 @@
-import { useEffect, useState } from 'react'
-import { Heart, Users, MessageCircle, Calendar, Shield } from 'lucide-react'
+import React from 'react';
+import { Heart, Users, MessageCircle, Calendar } from 'lucide-react';
 
 interface SplashScreenProps {
-  onComplete: () => void
+  onGetStarted: () => void;
 }
 
-export default function SplashScreen({ onComplete }: SplashScreenProps) {
-  const [currentFeature, setCurrentFeature] = useState(0)
-
-  const features = [
-    {
-      icon: <Heart className="w-8 h-8 text-primary" />,
-      title: "Find Your Tribe",
-      description: "Connect with mothers who truly understand your journey"
-    },
-    {
-      icon: <Users className="w-8 h-8 text-primary" />,
-      title: "Meaningful Groups",
-      description: "Join small, compatible groups based on your values and needs"
-    },
-    {
-      icon: <MessageCircle className="w-8 h-8 text-primary" />,
-      title: "Safe Support",
-      description: "Access mental health support and specialized communities"
-    },
-    {
-      icon: <Calendar className="w-8 h-8 text-primary" />,
-      title: "Real Connections",
-      description: "Plan activities and build lasting friendships"
-    },
-    {
-      icon: <Shield className="w-8 h-8 text-primary" />,
-      title: "Your Privacy",
-      description: "Safe, moderated spaces designed for authentic connection"
-    }
-  ]
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentFeature((prev) => (prev + 1) % features.length)
-    }, 2000)
-
-    const splashTimer = setTimeout(() => {
-      onComplete()
-    }, 8000)
-
-    return () => {
-      clearInterval(timer)
-      clearTimeout(splashTimer)
-    }
-  }, [onComplete, features.length])
-
+export default function SplashScreen({ onGetStarted }: SplashScreenProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-primary/10 flex flex-col items-center justify-center p-4">
-      <div className="text-center max-w-md w-full">
+    <div className="min-h-screen bg-gradient-to-br from-background to-primary/10 flex flex-col items-center justify-center p-6">
+      <div className="max-w-md w-full text-center space-y-8">
         {/* Logo */}
-        <div className="mb-8 fade-in">
-          <div className="w-20 h-20 mx-auto mb-4 kora-gradient rounded-full flex items-center justify-center">
-            <Heart className="w-10 h-10 text-white" />
-          </div>
-          <h1 className="text-4xl font-bold text-accent mb-2">Kora</h1>
-          <p className="text-lg text-muted-foreground">
-            Community Connection for Mothers
+        <div className="flex justify-center mb-8">
+          <img 
+            src="/kora-logo.png" 
+            alt="Kora - Community Connection for Mothers" 
+            className="w-32 h-32 object-contain"
+          />
+        </div>
+
+        {/* Tagline */}
+        <div className="space-y-4">
+          <h1 className="text-3xl font-bold text-accent">
+            Find Your Tribe
+          </h1>
+          <p className="text-lg text-muted-foreground leading-relaxed">
+            Connect with mothers who truly understand your journey. Build meaningful relationships through shared experiences, values, and support.
           </p>
         </div>
 
-        {/* Feature showcase */}
-        <div className="kora-card p-6 mb-8 slide-up">
-          <div className="flex flex-col items-center text-center min-h-[120px] justify-center">
-            <div className="mb-3 transition-all duration-500 ease-in-out">
-              {features[currentFeature].icon}
-            </div>
-            <h3 className="text-lg font-semibold text-accent mb-2 transition-all duration-500 ease-in-out">
-              {features[currentFeature].title}
-            </h3>
-            <p className="text-muted-foreground text-sm transition-all duration-500 ease-in-out">
-              {features[currentFeature].description}
-            </p>
+        {/* Features */}
+        <div className="grid grid-cols-2 gap-4 py-6">
+          <div className="flex flex-col items-center space-y-2 p-4 rounded-lg bg-white/50">
+            <Users className="w-8 h-8 text-primary" />
+            <span className="text-sm font-medium text-accent">Smart Matching</span>
           </div>
-          
-          {/* Progress dots */}
-          <div className="flex justify-center space-x-2 mt-4">
-            {features.map((_, index) => (
-              <div
-                key={index}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  index === currentFeature 
-                    ? 'bg-primary scale-125' 
-                    : 'bg-muted'
-                }`}
-              />
-            ))}
+          <div className="flex flex-col items-center space-y-2 p-4 rounded-lg bg-white/50">
+            <MessageCircle className="w-8 h-8 text-primary" />
+            <span className="text-sm font-medium text-accent">Safe Spaces</span>
+          </div>
+          <div className="flex flex-col items-center space-y-2 p-4 rounded-lg bg-white/50">
+            <Calendar className="w-8 h-8 text-primary" />
+            <span className="text-sm font-medium text-accent">Group Events</span>
+          </div>
+          <div className="flex flex-col items-center space-y-2 p-4 rounded-lg bg-white/50">
+            <Heart className="w-8 h-8 text-primary" />
+            <span className="text-sm font-medium text-accent">Mental Health Support</span>
           </div>
         </div>
 
-        {/* Skip button */}
+        {/* CTA Button */}
         <button
-          onClick={onComplete}
-          className="text-muted-foreground hover:text-accent transition-colors duration-200 text-sm"
+          onClick={onGetStarted}
+          className="w-full bg-accent text-white py-4 px-6 rounded-full font-semibold text-lg hover:bg-accent/90 transition-colors shadow-lg"
         >
-          Skip intro
+          Get Started
         </button>
-      </div>
 
-      {/* Loading indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-        <div className="w-32 h-1 bg-muted rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-primary rounded-full transition-all duration-8000 ease-linear"
-            style={{ width: '100%', animation: 'loadingBar 8s linear forwards' }}
-          />
-        </div>
+        {/* Support Text */}
+        <p className="text-sm text-muted-foreground">
+          Join thousands of mothers finding connection, support, and friendship
+        </p>
       </div>
-
-      <style jsx>{`
-        @keyframes loadingBar {
-          from { width: 0%; }
-          to { width: 100%; }
-        }
-      `}</style>
     </div>
-  )
+  );
 }
